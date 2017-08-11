@@ -6,13 +6,27 @@ from tkinter import *
 
 
 def sel(var1):
-   im = cv2.imread('3.jpg')
+   var1 = '20'
+   im = cv2.imread('2.jpg')
    im = cv2.GaussianBlur(im, (3, 3), 0)
    canny = cv2.Canny(im, int(var1), int(var1)*3)
-   # output1 = []
-   # output2 = []
-   # cv2.findContours(canny, output1, output2, )
-   cv2.imwrite(path, canny)
+   ret, thresh = cv2.threshold(canny, 127, 255, 0)
+   im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+   area = -1
+   cnt = contours[0]
+   for cnt0 in contours:
+       t = cv2.contourArea(cnt0)
+       if t > area:
+           cnt = cnt0
+           area = t
+
+   # epsilon = 0.1 * cv2.arcLength(cnt, True)
+   # approx = cv2.approxPolyDP(cnt, epsilon, True)
+   # cv2.drawContours(im, [approx], -1, (0, 255, 0), 3)
+
+   cv2.drawContours(im, contours, -1, (0, 255, 0), 3)
+   cv2.imwrite(path, im2)
    img2 = ImageTk.PhotoImage(PIL.Image.open(path))
    panel.configure(image=img2)
    panel.image = img2
